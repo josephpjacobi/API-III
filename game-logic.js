@@ -71,4 +71,115 @@ const setPlayerMoves = (player, moveOneType, moveOneValue, moveTwoType,
   const validValues = (value1, value2, value3) =>
   value1 >= 1 && value2 >= 1 && value3 >= 1 && value1 + value2 + value3 <= 99;
 
-  
+
+  const getRoundWinner = round => {
+    let playerOneType;
+    let playerOneValue;
+    let playerTwoType;
+    let playerTwoValue;
+
+    switch (round) {
+      case 1:
+      playerOneType = playerOneMoveOneType;
+      playerOneValue = playerOneMoveOneValue;
+      playerTwoType = playerTwoMoveOneType;
+      playerTwoValue = playerTwoMoveOneValue;
+      break;
+
+      case 2:
+      playerOneType = playerOneMoveTwoType;
+      playerOneValue = playerOneMoveTwoValue;
+      playerTwoType = playerTwoMoveTwoType;
+      playerTwoValue = playerTwoMoveTwoValue;
+      break;
+
+      case 3:
+      playerOneType = playerOneMoveThreeType;
+      playerOneValue = playerOneMoveThreeValue;
+      playerTwoType = playerTwoMoveThreeType;
+      playerTwoValue = playerTwoMoveThreeValue;
+      break;
+
+      default:
+      return null;
+    }
+    return evaluateMove(playerOneType, playerOneValue, playerTwoType, playerTwoValue);
+};
+
+  const evaluateMove = (playerOneType, playerOneValue, playerTwoType, playerTwoValue) => {
+//ensure that all moves are present
+    if (!playerOneType || !playerOneValue || !playerTwoType || !playerTwoValue) {
+      return null;
+    }
+
+    //if the types are the same then the winner is chosen via the higher value points
+    if (playerOneType === playerTwoType) {
+      if (playerOneValue === playerTwoValue) {
+        return TIE;
+      }
+      return playerOneValue > playerTwoValue ? P1 : P2;
+    }
+// types are different than normal rock-paper-scissor rules apply
+   switch (playerOneType) {
+     case ROCK:
+       return playerTwoType === SCISSORS ? P1 : P2;
+
+     case PAPER:
+       return playerTwoType === ROCK ? P1 : P2;
+
+     case SCISSORS:
+       return playerTwoType === PAPER ? P1 : P2;
+ }
+};
+
+let p1Wins;
+let p2Wins;
+
+const allGlobalsDefined = () =>
+  playerOneMoveOneType &&
+  playerOneMoveTwoType &&
+  playerOneMoveThreeType &&
+  playerTwoMoveOneType &&
+  playerTwoMoveTwoType &&
+  playerTwoMoveThreeType &&
+  playerOneMoveOneValue &&
+  playerOneMoveTwoValue &&
+  playerOneMoveThreeValue &&
+  playerTwoMoveOneValue &&
+  playerTwoMoveTwoValue &&
+  playerTwoMoveThreeValue;
+
+
+const getGameWinner = () => {
+  if (!allGlobalsDefined()) {
+    return null;
+  }
+
+
+  let r1Winner = getRoundWinner(1);
+  let r2Winner = getRoundWinner(2);
+  let r3Winner = getRoundWinner(3);
+
+  p1Wins = 0;
+  p2Wins = 0;
+
+  incrementScores(r1Winner);
+  incrementScores(r2Winner);
+  incrementScores(r3Winner);
+
+  if (p1Wins === p2Wins) {
+    return TIE;
+  } return p1Wins > p2Wins ? P1 : P2;
+};
+
+const incrementScores = winner => {
+  switch (winner) {
+    case P1:
+     p1Wins += 1;
+     break;
+
+   case P2:
+     p2Wins += 1;
+     break;
+  }
+};
